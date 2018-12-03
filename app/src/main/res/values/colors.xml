@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="grey_60">#666666</color>
+    <color name="grey_90">#263238</color>
+    <color name="grey_40">#999999</color>
+    <color name="light_green_600">#7CB342</color>
+    <color name="grey_5">#f2f2f2</color>
+    <color name="grey_10">#e6e6e6</color>
+    <color name="light_green_700">#689F38</color>
+    <color name="blue_600">#1E88E5</color>
+    <color name="blue_grey_600">#546E7A</color>
+    <color name="qianhui1">#F5F7Fa</color>
+    <color name="shenhui1">#656D78</color>
+    <color name="zhonghui1">#CCD1D9</color>
+    <color name="pay_btn">#FA7F2B</color>
+
+</resources>
