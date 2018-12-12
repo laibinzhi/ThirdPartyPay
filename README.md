@@ -74,13 +74,21 @@ allprojects {
 }
 ```
 
-然后再项目的build.gradle中的dependencies添加
+然后在项目的build.gradle中的dependencies添加
 
 
 ```
 implementation 'com.lbz.pay:mypay:0.0.5'
 
 implementation (name: 'alipaySdk-15.5.9-20181123210601',ext: 'aar')
+
+```
+然后在android节点下加入
+```
+android{
+    useLibrary 'org.apache.http.legacy'
+
+}
 
 ```
 然后把aar文件copy到目录的libs文件夹（因为支付宝是以aar文件导入，aar文件无法引用aar文件的原因，需要重新导入一次）
