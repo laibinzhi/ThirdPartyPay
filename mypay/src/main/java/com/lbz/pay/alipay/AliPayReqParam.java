@@ -1,60 +1,127 @@
 package com.lbz.pay.alipay;
 
+import android.util.Log;
+
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AliPayReqParam implements Serializable {
 
-    private String body;//对一笔交易的具体描述信息。如果是多种商品，请将商品描述字符串累加传给body。
-    private String seller_id;//卖家支付宝账号
-    private String total_fee;//金额
-    private String service;//接口名称，固定值。
-    private String _input_charset;//商户网站使用的编码格式，固定为UTF-8。
-    private String sign;
-    private String out_trade_no;//商户网站唯一订单号
-    private String payment_type;//支付类型。默认值为：1（商品购买）。
-    private String notify_url;//支付宝服务器主动通知商户网站里指定的页面http路径。
-    private String sign_type;//签名类型，目前仅支持RSA。
-    private String partner;//签约的支付宝账号对应的支付宝唯一用户号。以2088开头的16位纯数字组成。
+    public static final String TAG = AliPayReqParam.class.getSimpleName();
+
+    //公共参数
+    private String app_id;//支付宝分配给开发者的应用ID
+    private String sign;//商户请求参数的签名串，详见签名
+    private String timestamp;//发送请求的时间，格式"yyyy-MM-dd HH:mm:ss"
+    private String notify_url;//支付宝服务器主动通知商户服务器里指定的页面http/https路径。建议商户使用https
+
+    //业务请求参数集合
     private String subject;//商品的标题/交易标题/订单标题/订单关键字等。
+    private String out_trade_no;//商户网站唯一订单号
+    private String total_amount;//订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
 
-    public String getBody() {
-        return body;
+    private String alipay_request;
+
+    public String getAlipay_request() {
+        return alipay_request;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setAlipay_request(String alipay_request) {
+        this.alipay_request = alipay_request;
     }
 
-    public String getSeller_id() {
-        return seller_id;
+    public String createOrderInfo() {
+        return getOrderInfo(this.app_id, this.timestamp, this.notify_url, this.subject, this.out_trade_no, this.total_amount, this.sign);
     }
 
-    public void setSeller_id(String seller_id) {
-        this.seller_id = seller_id;
+    private String getOrderInfo(String app_id, String timestamp, String notify_url, String subject, String out_trade_no, String total_amount, String sign) {
+        Map<String, String> keyValues = new HashMap<String, String>();
+
+        keyValues.put("app_id", app_id);
+        keyValues.put("method", "alipay.trade.app.pay");
+        keyValues.put("charset", "utf-8");
+        keyValues.put("sign_type", "RSA2");
+        keyValues.put("timestamp", timestamp);
+        keyValues.put("version", "1.0");
+        keyValues.put("notify_url", notify_url);
+        String biz_content = "{subject:" + "\"" + subject + "\"";
+        biz_content += ",out_trade_no:" + "\"" + out_trade_no + "\"";
+        biz_content += ",total_amount:" + "\"" + total_amount + "\"";
+        biz_content += ",product_code:" + "\"" + "QUICK_MSECURITY_PAY" + "\"}";
+        keyValues.put("biz_content", biz_content);
+        keyValues.put("sign", sign);
+        Log.e(TAG, "biz_content=" + biz_content);
+        return buildOrderParam(keyValues);
     }
 
-    public String getTotal_fee() {
-        return total_fee;
+
+    private String buildOrderParam(Map<String, String> map) {
+        List<String> keys = new ArrayList<String>(map.keySet());
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < keys.size() - 1; i++) {
+            String key = keys.get(i);
+            String value = map.get(key);
+            sb.append(buildKeyValue(key, value, true));
+            sb.append("&");
+        }
+
+        String tailKey = keys.get(keys.size() - 1);
+        String tailValue = map.get(tailKey);
+        sb.append(buildKeyValue(tailKey, tailValue, true));
+
+        return sb.toString();
     }
 
-    public void setTotal_fee(String total_fee) {
-        this.total_fee = total_fee;
+    /**
+     * 拼接键值对
+     *
+     * @param key
+     * @param value
+     * @param isEncode
+     * @return
+     */
+    private String buildKeyValue(String key, String value, boolean isEncode) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(key);
+        sb.append("=");
+        if (isEncode) {
+            try {
+                sb.append(URLEncoder.encode(value, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                sb.append(value);
+            }
+        } else {
+            sb.append(value);
+        }
+        return sb.toString();
     }
 
-    public String getService() {
-        return service;
+    public AliPayReqParam(String app_id, String sign, String timestamp, String notify_url, String subject, String out_trade_no, String total_amount) {
+        this.app_id = app_id;
+        this.sign = sign;
+        this.timestamp = timestamp;
+        this.notify_url = notify_url;
+        this.subject = subject;
+        this.out_trade_no = out_trade_no;
+        this.total_amount = total_amount;
     }
 
-    public void setService(String service) {
-        this.service = service;
+    public AliPayReqParam(String alipay_request) {
+        this.alipay_request = alipay_request;
     }
 
-    public String get_input_charset() {
-        return _input_charset;
+    public String getApp_id() {
+        return app_id;
     }
 
-    public void set_input_charset(String _input_charset) {
-        this._input_charset = _input_charset;
+    public void setApp_id(String app_id) {
+        this.app_id = app_id;
     }
 
     public String getSign() {
@@ -65,20 +132,12 @@ public class AliPayReqParam implements Serializable {
         this.sign = sign;
     }
 
-    public String getOut_trade_no() {
-        return out_trade_no;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setOut_trade_no(String out_trade_no) {
-        this.out_trade_no = out_trade_no;
-    }
-
-    public String getPayment_type() {
-        return payment_type;
-    }
-
-    public void setPayment_type(String payment_type) {
-        this.payment_type = payment_type;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getNotify_url() {
@@ -89,22 +148,6 @@ public class AliPayReqParam implements Serializable {
         this.notify_url = notify_url;
     }
 
-    public String getSign_type() {
-        return sign_type;
-    }
-
-    public void setSign_type(String sign_type) {
-        this.sign_type = sign_type;
-    }
-
-    public String getPartner() {
-        return partner;
-    }
-
-    public void setPartner(String partner) {
-        this.partner = partner;
-    }
-
     public String getSubject() {
         return subject;
     }
@@ -113,73 +156,33 @@ public class AliPayReqParam implements Serializable {
         this.subject = subject;
     }
 
-
-    public String createOrderInfo(){
-        return getOrderInfo(this.subject, this.body, this.total_fee, this.partner, this.seller_id, this.out_trade_no, this.notify_url, this.service, this.payment_type, this._input_charset);
+    public String getOut_trade_no() {
+        return out_trade_no;
     }
 
-    private String getOrderInfo(String subject, String body, String total_fee, String partner, String seller_id, String out_trade_no, String notify_url, String service, String payment_type, String _input_charset) {
-
-        // 签约合作者身份ID
-        String orderInfo = "partner=" + "\"" + partner + "\"";
-
-        // 签约卖家支付宝账号
-        orderInfo += "&seller_id=" + "\"" + seller_id + "\"";
-
-        // 商户网站唯一订单号
-        orderInfo += "&out_trade_no=" + "\"" + out_trade_no + "\"";
-
-        // 商品名称
-        orderInfo += "&subject=" + "\"" + subject + "\"";
-
-        // 商品详情
-        orderInfo += "&body=" + "\"" + body + "\"";
-
-        // 商品金额
-        orderInfo += "&total_fee=" + "\"" + total_fee + "\"";
-
-        // 服务器异步通知页面路径
-        orderInfo += "&notify_url=" + "\"" + notify_url + "\"";
-
-        // 服务接口名称， 固定值
-        orderInfo += "&service=" + "\"" + service + "\"";
-
-        // 支付类型， 固定值
-        orderInfo += "&payment_type=" + "\"" + payment_type + "\"";
-
-        // 参数编码， 固定值
-        orderInfo += "&_input_charset=" + "\"" + _input_charset + "\"";
-
-        // 设置未付款交易的超时时间
-        // 默认30分钟，一旦超时，该笔交易就会自动被关闭。
-        // 取值范围：1m～15d。
-        // m-分钟，h-小时，d-天，1c-当天（无论交易何时创建，都在0点关闭）。
-        // 该参数数值不接受小数点，如1.5h，可转换为90m。
-//        orderInfo += "&it_b_pay=\"30m\"";
-
-        // extern_token为经过快登授权获取到的alipay_open_id,带上此参数用户将使用授权的账户进行支付
-        // orderInfo += "&extern_token=" + "\"" + extern_token + "\"";
-
-        // 支付宝处理完请求后，当前页面跳转到商户指定页面的路径，可空
-//        orderInfo += "&return_url=\"m.alipay.com\"";
-
-        return orderInfo;
-    }
-
-    public AliPayReqParam(String body, String seller_id, String total_fee, String service, String _input_charset, String sign, String out_trade_no, String payment_type, String notify_url, String sign_type, String partner, String subject) {
-        super();
-        this.body = body;
-        this.seller_id = seller_id;
-        this.total_fee = total_fee;
-        this.service = service;
-        this._input_charset = _input_charset;
-        this.sign = sign;
+    public void setOut_trade_no(String out_trade_no) {
         this.out_trade_no = out_trade_no;
-        this.payment_type = payment_type;
-        this.notify_url = notify_url;
-        this.sign_type = sign_type;
-        this.partner = partner;
-        this.subject = subject;
     }
 
+    public String getTotal_amount() {
+        return total_amount;
+    }
+
+    public void setTotal_amount(String total_amount) {
+        this.total_amount = total_amount;
+    }
+
+    @Override
+    public String toString() {
+        return "AliPayReqParam{" +
+                "app_id='" + app_id + '\'' +
+                ", sign='" + sign + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", notify_url='" + notify_url + '\'' +
+                ", subject='" + subject + '\'' +
+                ", out_trade_no='" + out_trade_no + '\'' +
+                ", total_amount='" + total_amount + '\'' +
+                ", alipay_request='" + alipay_request + '\'' +
+                '}';
+    }
 }

@@ -31,4 +31,8 @@ public class PayAPI {
         AliPayAPI.getInstance().sendPayReq(aliPayReq);
     }
 
+    public void sendPayRequestByOrderInfo(AliPayReq aliPayReq){
+        AliPayAPI.getInstance().sendPatReqByOrderInfo(aliPayReq);
+    }
+
 }

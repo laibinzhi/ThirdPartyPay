@@ -1,5 +1,6 @@
 package com.lbz.pay_sample;
 
+import android.Manifest;
 import android.graphics.PorterDuff;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,10 +13,13 @@ import com.lbz.pay.alipay.AliPayReq;
 import com.lbz.pay.alipay.AliPayReqParam;
 import com.lbz.pay.wechat.WeChatPayReq;
 import com.lbz.pay.wechat.WeChatReqParam;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +51,18 @@ public class MainActivity extends AppCompatActivity {
                 selectPayPopupWindow.setOnAliPayListener(new SelectPayPopupWindow.ISelectPayWayListener() {
                     @Override
                     public void payByAliPay() {
-                        AliPay();
+                        new RxPermissions(MainActivity.this)
+                                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE)
+                                .subscribe(new Consumer<Boolean>() {
+                                    @Override
+                                    public void accept(Boolean granted) throws Exception {
+                                        if (granted) {
+                                            AliPay();
+                                        }
+                                    }
+                                });
+
+
                     }
 
                     @Override
@@ -69,22 +84,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void AliPay() {
         //以下数据从服务器获取
-        String body = "";
-        String seller_id = "";
-        String total_fee = "";
-        String service = "";
-        String _input_charset = "";
-        String sign = "";
-        String out_trade_no = "";
-        String payment_type = "";
-        String notify_url = "";
-        String sign_type = "";
-        String partner = "";
-        String subject = "";
+        String app_id = "2014072300007148";//支付宝分配给开发者的应用ID
+        String sign = "thissignthis";//商户请求参数的签名串，详见签名
+        String timestamp = "2014-07-24 03:07:50";//发送请求的时间，格式"yyyy-MM-dd HH:mm:ss"
+        String notify_url = "https://api.xx.com/receive_notify.htm";//支付宝服务器主动通知商户服务器里指定的页面http/https路径。建议商户使用https
+
+        //业务请求参数集合
+        String subject = "大乐透";//商品的标题/交易标题/订单标题/订单关键字等。
+        String out_trade_no = "70501111111S001111119";//商户网站唯一订单号
+        String total_amount = "9.00";//订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
         //以上数据从服务器获取
 
+        String orderinfo = "orderinfo";//完整请求信息
 
-        AliPayReqParam aliPayReqParam = new AliPayReqParam(body, seller_id, total_fee, service, _input_charset, sign, out_trade_no, payment_type, notify_url, sign_type, partner, subject);
+//        AliPayReqParam aliPayReqParam = new AliPayReqParam(app_id, sign, timestamp, notify_url, subject, out_trade_no, total_amount);
+        AliPayReqParam aliPayReqParam = new AliPayReqParam(orderinfo);
         AliPayReq aliPayReq = new AliPayReq.Builder().with(MainActivity.this)
                 .setAliPayReqParam(aliPayReqParam)
                 .create()
@@ -113,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-        PayAPI.getInstance().sendPayRequest(aliPayReq);
+//        PayAPI.getInstance().sendPayRequest(aliPayReq);
+        PayAPI.getInstance().sendPayRequestByOrderInfo(aliPayReq);
 
     }
 
@@ -125,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         String mch_id = "";
         String appid = "";
         String wx_key = "";
-       //以上数据从服务器获取
+        //以上数据从服务器获取
 
         WeChatReqParam weChatReqParam = new WeChatReqParam(nonce_str, sign, prepay_id, mch_id, appid, wx_key);
         WeChatPayReq weChatPayReq = new WeChatPayReq.Builder().with(MainActivity.this)
