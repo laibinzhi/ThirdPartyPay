@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-version = "0.0.5"//定义版本标识
+version = "0.0.6"//定义版本标识
 
 def siteUrl = 'https://github.com/laibinzhi/ThirdPartyPay'                        // #CONFIG# // project homepage
 def gitUrl = 'https://github.com/laibinzhi/ThirdPartyPay.git'                     // #CONFIG# // project git

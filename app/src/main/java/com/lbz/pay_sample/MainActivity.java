@@ -143,10 +143,14 @@ public class MainActivity extends AppCompatActivity {
         //以上数据从服务器获取
 
         WeChatReqParam weChatReqParam = new WeChatReqParam(nonce_str, sign, prepay_id, mch_id, appid, wx_key);
+        WeChatReqParam weChatReqParam2 = new WeChatReqParam(nonce_str, sign, prepay_id, mch_id, appid);
+
         WeChatPayReq weChatPayReq = new WeChatPayReq.Builder().with(MainActivity.this)
-                .setWeChatReqParam(weChatReqParam)
+                .setWeChatReqParam(weChatReqParam2)
                 .create();
-        PayAPI.getInstance().sendPayRequest(weChatPayReq);
+//        PayAPI.getInstance().sendPayRequest(weChatPayReq);
+        PayAPI.getInstance().sendPayRequestWithOutKey(weChatPayReq);
+
     }
 
     private void initToolbar() {

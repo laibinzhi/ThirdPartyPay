@@ -21,4 +21,8 @@ public class WeChatPayAPI {
         wechatPayReq.send();
     }
 
+    public void sendPayReqWithOutKey(WeChatPayReq wechatPayReq){
+        wechatPayReq.sendWithOutKey();
+    }
+
 }

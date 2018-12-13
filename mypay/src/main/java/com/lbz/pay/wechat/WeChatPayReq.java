@@ -47,6 +47,23 @@ public class WeChatPayReq {
 
     }
 
+    public void sendWithOutKey() {
+        api = WXAPIFactory.createWXAPI(this.mContext, this.mWeChatReqParam.getAppid());
+
+        PayReq req = new PayReq();
+        req.appId = this.mWeChatReqParam.getAppid();
+        req.partnerId = this.mWeChatReqParam.getMch_id();
+        req.prepayId = this.mWeChatReqParam.getPrepay_id();
+        req.packageValue = "Sign=WXPay";
+        req.nonceStr = this.mWeChatReqParam.getNonce_str();
+        req.timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+        req.sign = this.mWeChatReqParam.getSign();
+
+        api.registerApp(this.mWeChatReqParam.getAppid());
+        api.sendReq(req);
+
+    }
+
 
     public static class Builder {
 

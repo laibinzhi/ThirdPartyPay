@@ -78,7 +78,7 @@ allprojects {
 
 
 ```
-implementation 'com.lbz.pay:mypay:0.0.5'
+implementation 'com.lbz.pay:mypay:0.0.6'
 
 implementation (name: 'alipaySdk-15.5.9-20181123210601',ext: 'aar')
 

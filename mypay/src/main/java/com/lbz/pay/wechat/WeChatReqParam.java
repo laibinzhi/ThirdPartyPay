@@ -69,6 +69,14 @@ public class WeChatReqParam implements Serializable{
         this.wechatKey =wechatKey;
     }
 
+    public WeChatReqParam(String nonce_str, String sign, String prepay_id, String mch_id, String appid) {
+        this.nonce_str = nonce_str;
+        this.sign = sign;
+        this.prepay_id = prepay_id;
+        this.mch_id = mch_id;
+        this.appid = appid;
+    }
+
     @Override
     public String toString() {
         return "WeChatReqParam{" +

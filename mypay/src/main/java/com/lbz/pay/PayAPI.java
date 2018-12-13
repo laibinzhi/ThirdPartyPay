@@ -27,6 +27,10 @@ public class PayAPI {
         WeChatPayAPI.getInstance().sendPayReq(wechatPayReq);
     }
 
+    public void sendPayRequestWithOutKey(WeChatPayReq wechatPayReq){
+        WeChatPayAPI.getInstance().sendPayReqWithOutKey(wechatPayReq);
+    }
+
     public void sendPayRequest(AliPayReq aliPayReq){
         AliPayAPI.getInstance().sendPayReq(aliPayReq);
     }
