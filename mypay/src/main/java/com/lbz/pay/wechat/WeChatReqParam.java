@@ -9,6 +9,7 @@ public class WeChatReqParam implements Serializable{
     private String prepay_id;//预支付交易会话标识
     private String mch_id;//商户号	微信支付分配的商户号
     private String appid;//应用ID
+    private String timestamp;//时间戳
     private String wechatKey;//微信支付商户支付key
 
     public String getNonce_str() {
@@ -59,22 +60,31 @@ public class WeChatReqParam implements Serializable{
         this.wechatKey = wechatKey;
     }
 
-    public WeChatReqParam(String nonce_str, String sign, String prepay_id, String mch_id, String appid,String wechatKey) {
-        super();
-        this.nonce_str = nonce_str;
-        this.sign = sign;
-        this.prepay_id = prepay_id;
-        this.mch_id = mch_id;
-        this.appid = appid;
-        this.wechatKey =wechatKey;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public WeChatReqParam(String nonce_str, String sign, String prepay_id, String mch_id, String appid) {
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public WeChatReqParam(String nonce_str, String sign, String prepay_id, String mch_id, String appid, String timestamp, String wechatKey) {
         this.nonce_str = nonce_str;
         this.sign = sign;
         this.prepay_id = prepay_id;
         this.mch_id = mch_id;
         this.appid = appid;
+        this.timestamp = timestamp;
+        this.wechatKey = wechatKey;
+    }
+
+    public WeChatReqParam(String nonce_str, String sign, String prepay_id, String mch_id, String appid, String timestamp) {
+        this.nonce_str = nonce_str;
+        this.sign = sign;
+        this.prepay_id = prepay_id;
+        this.mch_id = mch_id;
+        this.appid = appid;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -85,6 +95,7 @@ public class WeChatReqParam implements Serializable{
                 ", prepay_id='" + prepay_id + '\'' +
                 ", mch_id='" + mch_id + '\'' +
                 ", appid='" + appid + '\'' +
+                ", timestamp='" + timestamp + '\'' +
                 ", wechatKey='" + wechatKey + '\'' +
                 '}';
     }

@@ -30,7 +30,7 @@ public class WeChatPayReq {
         req.prepayId = this.mWeChatReqParam.getPrepay_id();
         req.packageValue = "Sign=WXPay";
         req.nonceStr = this.mWeChatReqParam.getNonce_str();
-        req.timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+        req.timeStamp =this.mWeChatReqParam.getTimestamp();
 
         List<NameValuePair> signParams = new LinkedList<>();
         signParams.add(new BasicNameValuePair("appid", req.appId));
@@ -56,7 +56,7 @@ public class WeChatPayReq {
         req.prepayId = this.mWeChatReqParam.getPrepay_id();
         req.packageValue = "Sign=WXPay";
         req.nonceStr = this.mWeChatReqParam.getNonce_str();
-        req.timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+        req.timeStamp = this.mWeChatReqParam.getTimestamp();
         req.sign = this.mWeChatReqParam.getSign();
 
         api.registerApp(this.mWeChatReqParam.getAppid());
